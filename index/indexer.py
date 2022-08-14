@@ -15,7 +15,7 @@ def main():
     parser.setContentHandler(content_handler)
     parser.parse(path_to_wiki_dump)
 
-    print(content_handler.page_count)
+    print(f"Completed indexing of {content_handler.page_count} pages.")
 
 
 if __name__ == "__main__":
