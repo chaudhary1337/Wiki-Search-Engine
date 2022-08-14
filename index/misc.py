@@ -12,6 +12,14 @@ def log(func):
     return inner
 
 
+def enc(s):
+    return str(hex(s))[2:]
+
+
+def dec(hax):
+    return int("0x" + hax, 16)
+
+
 CUSTOM_STOPWORDS = [
     "https",
     "http",

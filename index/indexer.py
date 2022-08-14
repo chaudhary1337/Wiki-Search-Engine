@@ -17,6 +17,14 @@ def main():
 
     print(f"Completed indexing of {content_handler.page_count} pages.")
 
+    with open("invertedindex_stat.txt", "w") as f:
+        f.write(
+            content_handler.total_tokens
+            + "\n"
+            + content_handler.total_tokens_inverted_index
+            + "\n"
+        )
+
 
 if __name__ == "__main__":
     main()

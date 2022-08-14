@@ -1,5 +1,5 @@
 from extract import Extract
-from misc import FIELDS, PRINT_LIMIT, DUMP_LIMIT, log
+from misc import FIELDS, PRINT_LIMIT, DUMP_LIMIT, log, enc
 
 from collections import Counter, defaultdict
 from xml import sax as sx
@@ -42,9 +42,16 @@ class ContentHandler(sx.ContentHandler):
 
         # pages setup
         self.inverted_index = defaultdict(list)
+        self.total_tokens = 0
+        self.total_tokens_inverted_index = 0
+
+        # multiprocessing setup
+        pass
 
     @log
     def dump_pages(self):
+        self.total_tokens_inverted_index += len(self.inverted_index)
+
         # storing the inverted index
         with open(
             f"{self.path_to_inverted_index}/index{self.page_count//DUMP_LIMIT}.txt", "w"
@@ -55,6 +62,7 @@ class ContentHandler(sx.ContentHandler):
 
         # pages cleanup
         self.inverted_index = defaultdict(list)
+        return
 
     def dump_page(self, extracted_page):
         # add the page's information to the inverted index
@@ -65,22 +73,35 @@ class ContentHandler(sx.ContentHandler):
             words_set.update(counted_index[field].keys())
 
         for word in words_set:
-            encoded = str(self.page_count)
+            encoded = enc(self.page_count)
             for field in FIELDS:
                 if word in counted_index[field]:
-                    encoded += field + str(counted_index[field][word])
+                    encoded += field + enc(counted_index[field][word])
             self.inverted_index[word].append(encoded)
 
         # if the page count is a multiple of the DUMP_LIMIT
         # then we do write the values
         if self.page_count and self.page_count % DUMP_LIMIT == 0:
+            # p = mp.Process(target=self.dump_pages)
+            # p.start()
+            # p.join()
             self.dump_pages()
 
         return
 
+    def get_total_token_count(self, extracted_page):
+        return (
+            len(extracted_page["t"])
+            + len(extracted_page["b"])
+            + len(extracted_page["c"])
+            + len(extracted_page["l"])
+            + len(extracted_page["r"])
+        )
+
     def startElement(self, name, _):
         # keep a track of the current tag being seen
         self.curr_tag = name
+        return
 
     def endElement(self, name):
         # if page not ending, we keep on using the
@@ -93,6 +114,8 @@ class ContentHandler(sx.ContentHandler):
         extracted_page = self.page_handler.handle(self.page)
         self.dump_page(extracted_page)
 
+        self.total_tokens += self.get_total_token_count(extracted_page)
+
         # page ends, so fresh start
         self.page = defaultdict(list)
         self.page_count += 1
@@ -100,6 +123,7 @@ class ContentHandler(sx.ContentHandler):
         # log
         if self.page_count % PRINT_LIMIT == 0:
             print(f"Parsed {self.page_count} pages.")
+        return
 
     def characters(self, content):
         # adds content to a page depending upon which tag is active

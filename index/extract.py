@@ -15,9 +15,9 @@ class Extract:
         self.stem_words = Stemmer.Stemmer("english").stemWords
 
     def clean(self, text):
-        text = re.sub("http[s]?://\S+", "", text)
+        text = re.sub(r"http[s]?://\S+", "", text)
         text = re.sub("&lt|&gt|&amp|&quot|&apos|&nbsp", " ", text)
-        text = re.sub("[^a-z0-9 ]", " ", text)
+        text = "".join(filter(str.isalnum, text))
 
         tokens = text.split()
         tokens_nonstop = [token for token in tokens if token not in self.stopwords]
@@ -37,10 +37,8 @@ class Extract:
         for ib in re.finditer("{{infobox", text):
             brackets = 0
             for i in range(ib.start(), n):
-                if text[i] == "{":
-                    brackets += 1
-                elif text[i] == "}":
-                    brackets -= 1
+                if text[i] in "{}":
+                    brackets += 1 if text[i] == "{" else -1
 
                 if brackets == 0:
                     break
@@ -67,20 +65,20 @@ class Extract:
             breaker.append("")
 
         body = breaker[0]
-        infoboxes = self.get_infobox(breaker[0])
-        links = self.get_links(breaker[1])
-        categories = self.get_categories(breaker[1])
-        references = self.get_references(breaker[1])
+        infoboxes = " ".join(self.get_infobox(breaker[0]))
+        links = " ".join(self.get_links(breaker[1]))
+        categories = " ".join(self.get_categories(breaker[1]))
+        references = " ".join(self.get_references(breaker[1]))
 
         return list(
             map(
                 self.clean,
                 [
                     body,
-                    " ".join(infoboxes),
-                    " ".join(links),
-                    " ".join(categories),
-                    " ".join(references),
+                    infoboxes,
+                    links,
+                    categories,
+                    references,
                 ],
             )
         )
