@@ -4,7 +4,7 @@ from misc import FIELDS, PRINT_LIMIT, DUMP_LIMIT, log, enc
 from collections import Counter, defaultdict
 from xml import sax as sx
 
-# handles information of ONE specific page 
+# handles information of ONE specific page
 class PageHandler:
     def __init__(self):
         self.extract = Extract()
@@ -36,6 +36,7 @@ class ContentHandler(sx.ContentHandler):
     and then dumps the information to a file every specified
     duration (as per the misc.py file)
     """
+
     def __init__(self, path_to_inverted_index):
         # necessary setup
         self.path_to_inverted_index = path_to_inverted_index
@@ -62,14 +63,15 @@ class ContentHandler(sx.ContentHandler):
 
         # storing the inverted index
         lines = []
-        for word in sorted(self.inverted_index):
+        # for word in sorted(self.inverted_index):
+        for word in self.inverted_index:
             word_data = " ".join(self.inverted_index[word])
             lines.append(f"{word};{word_data}\n")
 
         with open(
             f"{self.path_to_inverted_index}/index{self.page_count//DUMP_LIMIT}.txt", "w"
         ) as f:
-            f.write(lines)
+            f.write("".join(lines))
 
         # pages cleanup
         self.inverted_index = defaultdict(list)
@@ -98,6 +100,11 @@ class ContentHandler(sx.ContentHandler):
             # p.join()
             self.dump_pages()
 
+        return
+
+    def cleanup(self):
+        if self.inverted_index:
+            self.dump_pages()
         return
 
     def get_total_token_count(self, extracted_page):

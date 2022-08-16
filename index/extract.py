@@ -18,11 +18,11 @@ class Extract:
 
     def clean(self, text):
         # removes the links
-        text = re.sub(r"http[s]?://\S+", "", text)
+        text = re.sub(r"http[s]?://\S+", " ", text)
         # removes the jumnk
         text = re.sub("&lt|&gt|&amp|&quot|&apos|&nbsp", " ", text)
         # filers out the non-alphanumeric characters
-        text = "".join(filter(str.isalnum, text))
+        text = re.sub("[^0-9a-z ]", " ", text)
 
         tokens = text.split()
         tokens_nonstop = [token for token in tokens if token not in self.stopwords]
@@ -30,10 +30,15 @@ class Extract:
 
         return tokens_stemmed
 
+    def clean_body(self, text):
+        text = re.sub("{{.*?}}", "", text)
+        text = re.sub("[[.*?]]", "", text)
+        return text
+
     def extract_title(self, title):
         title = " ".join(title)
         title = title.lower()
-        return title
+        return self.clean(title)
 
     def extract_infobox(self, text):
         n = len(text)
@@ -78,7 +83,7 @@ class Extract:
         if len(breaker) < 2:
             breaker.append("")
 
-        body = str(breaker[0])
+        body = self.clean_body(str(breaker[0]))
         infoboxes = " ".join(self.extract_infobox(breaker[0]))
         links = " ".join(self.extract_links(breaker[1]))
         categories = " ".join(self.extract_categories(breaker[1]))

@@ -27,9 +27,9 @@ def main():
     # prints the required stats
     with open("invertedindex_stat.txt", "w") as f:
         f.write(
-            content_handler.total_tokens
+            str(content_handler.total_tokens)
             + "\n"
-            + content_handler.total_tokens_inverted_index
+            + str(content_handler.total_tokens_inverted_index)
             + "\n"
         )
 
