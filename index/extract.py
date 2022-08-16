@@ -1,9 +1,11 @@
-from misc import CUSTOM_STOPWORDS
+from misc import CUSTOM_STOPWORDS, NUM_PROCESSES
 
 from nltk.corpus import stopwords
 import Stemmer
 
 import re
+
+# import multiprocessing as mp
 
 
 class Extract:
@@ -11,8 +13,7 @@ class Extract:
         self.nltk_stopwords = stopwords.words("english")
         self.custom_stopwords = CUSTOM_STOPWORDS
         self.stopwords = set(self.nltk_stopwords + self.custom_stopwords)
-
-        self.stem_words = Stemmer.Stemmer("english").stemWords
+        self.stemwords = Stemmer.Stemmer("english").stemWords
 
     def clean(self, text):
         text = re.sub(r"http[s]?://\S+", "", text)
@@ -21,7 +22,7 @@ class Extract:
 
         tokens = text.split()
         tokens_nonstop = [token for token in tokens if token not in self.stopwords]
-        tokens_stemmed = self.stem_words(tokens_nonstop)
+        tokens_stemmed = self.stemwords(tokens_nonstop)
 
         return tokens_stemmed
 
@@ -64,11 +65,27 @@ class Extract:
         if len(breaker) < 2:
             breaker.append("")
 
-        body = breaker[0]
+        body = str(breaker[0])
         infoboxes = " ".join(self.get_infobox(breaker[0]))
         links = " ".join(self.get_links(breaker[1]))
         categories = " ".join(self.get_categories(breaker[1]))
         references = " ".join(self.get_references(breaker[1]))
+
+        # data = []
+        # with mp.Pool(NUM_PROCESSES) as pool:
+        #     data = pool.map(
+        #         self.clean,
+        #         [
+        #             body,
+        #             infoboxes,
+        #             links,
+        #             categories,
+        #             references,
+        #         ],
+        #     )
+        # pool.close()
+
+        # return list(data)
 
         return list(
             map(

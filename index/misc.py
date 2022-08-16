@@ -33,3 +33,4 @@ PRINT_LIMIT = 10000
 DUMP_LIMIT = 50000
 
 FIELDS = ["t", "i", "b", "c", "l", "r"]
+NUM_PROCESSES = 5

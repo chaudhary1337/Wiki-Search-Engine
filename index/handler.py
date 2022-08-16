@@ -57,8 +57,8 @@ class ContentHandler(sx.ContentHandler):
             f"{self.path_to_inverted_index}/index{self.page_count//DUMP_LIMIT}.txt", "w"
         ) as f:
             for word in sorted(self.inverted_index):
-                line = word + ";" + " ".join(self.inverted_index[word]) + "\n"
-                f.write(line)
+                word_data = " ".join(self.inverted_index[word])
+                f.write(f"{word};{word_data}\n")
 
         # pages cleanup
         self.inverted_index = defaultdict(list)
