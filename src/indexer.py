@@ -1,4 +1,4 @@
-from handler import ContentHandler
+from index.handler import ContentHandler
 from misc import log
 
 import sys

@@ -1,4 +1,4 @@
-from extract import Extract
+from index.extract import Extract
 from misc import FIELDS, PRINT_LIMIT, DUMP_LIMIT, log, enc
 
 from collections import Counter, defaultdict
