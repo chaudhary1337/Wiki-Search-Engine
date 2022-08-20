@@ -1,4 +1,5 @@
 from index.handler import ContentHandler
+from index.merger import Merge
 from misc import log
 
 import sys
@@ -32,6 +33,10 @@ def main():
             + str(content_handler.total_tokens_inverted_index)
             + "\n"
         )
+
+    # merge
+    merge = Merge(path_to_inverted_index)
+    merge.merge()
 
 
 if __name__ == "__main__":

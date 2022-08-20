@@ -89,22 +89,6 @@ class Extract:
         categories = " ".join(self.extract_categories(breaker[1]))
         references = " ".join(self.extract_references(breaker[1]))
 
-        # data = []
-        # with mp.Pool(NUM_PROCESSES) as pool:
-        #     data = pool.map(
-        #         self.clean,
-        #         [
-        #             body,
-        #             infoboxes,
-        #             links,
-        #             categories,
-        #             references,
-        #         ],
-        #     )
-        # pool.close()
-
-        # return list(data)
-
         # cleans up all the individual respective fields
         return list(
             map(

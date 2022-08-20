@@ -51,11 +51,10 @@ class ContentHandler(sx.ContentHandler):
 
         # pages setup
         self.inverted_index = defaultdict(list)
+
+        # global setup
         self.total_tokens = 0
         self.total_tokens_inverted_index = 0
-
-        # multiprocessing setup
-        pass
 
     @log
     def dump_pages(self):
@@ -64,7 +63,7 @@ class ContentHandler(sx.ContentHandler):
         # storing the inverted index
         lines = []
         # for word in sorted(self.inverted_index):
-        for word in self.inverted_index:
+        for word in sorted(self.inverted_index):
             word_data = " ".join(self.inverted_index[word])
             lines.append(f"{word};{word_data}\n")
 
@@ -95,9 +94,6 @@ class ContentHandler(sx.ContentHandler):
         # if the page count is a multiple of the DUMP_LIMIT
         # then we do write the values
         if self.page_count and self.page_count % DUMP_LIMIT == 0:
-            # p = mp.Process(target=self.dump_pages)
-            # p.start()
-            # p.join()
             self.dump_pages()
 
         return
@@ -122,6 +118,12 @@ class ContentHandler(sx.ContentHandler):
         return
 
     def endElement(self, name):
+        # if the end element is mediawiki, then we have completed our
+        # indexing
+        if name == "mediawiki":
+            self.cleanup()
+            return
+
         # if page not ending, we keep on using the
         # characters(content) method to add details
         if name != "page":

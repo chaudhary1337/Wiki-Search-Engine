@@ -7,7 +7,7 @@ def log(func):
         print(f'Running: "{func.__name__}" ...')
         func(*args, **kwargs)
         end_time = time.time()
-        print(f"Done.\nTaken {round(end_time-start_time, 4)}s")
+        print(f"Done: {func.__name__}. Taken {round(end_time-start_time, 4)}s")
 
     return inner
 
@@ -35,10 +35,10 @@ CUSTOM_STOPWORDS = [
 
 # IMPORTANT config
 # prints every specified pages, that yes, these many pages have been parsed
-PRINT_LIMIT = 10000
+PRINT_LIMIT = 1
 # dumps every specified pages to avoid the information in inverted
 # index blowing up
-DUMP_LIMIT = 50000
+DUMP_LIMIT = 1
 
 # all the supported fields
 FIELDS = ["t", "i", "b", "c", "l", "r"]
