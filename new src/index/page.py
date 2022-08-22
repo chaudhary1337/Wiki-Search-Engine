@@ -17,11 +17,17 @@ class Pages:
         self.inverted_index = defaultdict(defaultdict)
         self.extract = Extract()
 
+        # handling titles
+        self.titles = []
+
     def save_page(self, page_id, page):
         """
         adds information to the inverted_index
         """
+        self.titles.append("".join(page["title"]).strip())
+
         extracted_page = self.extract.extract(page)
+        print(extracted_page["b"])
 
         # keeps a track of all the words encountered currently
         words = set()
@@ -43,6 +49,10 @@ class Pages:
                 # if this combination is unseen, create a new list
                 if field not in self.inverted_index[word]:
                     self.inverted_index[word][field] = []
+
+                # if the term frequency is 0, simply skip over this field
+                if frequency[field][word] == 0:
+                    continue
 
                 self.inverted_index[word][field].append(
                     # for a given word
@@ -78,11 +88,11 @@ class Pages:
         word_data = []
         # goes over all the words in sorted ordering
         for word in sorted(self.inverted_index):
-            field_data = []
+            field_data = [""] * len(FIELDS)
 
-            for field in FIELDS:
+            for field_id, field in enumerate(FIELDS):
                 page_data = self.inverted_index[word][field]
-                field_data.append(",".join(page_data))
+                field_data[field_id] = ",".join(page_data)
 
             # joins all the field_data for each field by a semicolon
             word_data.append(word + " " + ";".join(field_data))
@@ -92,6 +102,12 @@ class Pages:
         ) as f:
             f.write("\n".join(word_data))
 
-        # resetting the inverted index
+        with open(
+            f"{self.path_to_inverted_index}/title{self.save_counter}.txt", "w"
+        ) as f:
+            f.write("\n".join(self.titles))
+
+        # resetting everything
         self.inverted_index = defaultdict(defaultdict)
         self.save_counter += 1
+        self.titles = []

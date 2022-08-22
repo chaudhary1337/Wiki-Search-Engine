@@ -29,6 +29,8 @@ FIELDS = {
     "r": "u",
 }
 
+FIELD_WEIGHTS = [1] * len(FIELDS)
+
 RFIELDS = {
     "p": "t",
     "q": "i",

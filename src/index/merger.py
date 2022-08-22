@@ -1,4 +1,3 @@
-from cgitb import small
 from misc import log
 
 from heapq import heapify, heappush, heappop
