@@ -21,7 +21,7 @@ class Extract:
         return tokens_stemmed
 
     def is_field_query(self, i, query):
-        if i < len(query) and query[i] in FIELDS and query[i + 1] == ":":
+        if i + 1 < len(query) and query[i] in FIELDS and query[i + 1] == ":":
             return query[i]
         else:
             return ""
@@ -57,9 +57,11 @@ class Extract:
                 i += 2
 
             # gets the new i and the buffer
-            i, buffer = self.get_buffers_while(i + 2, query)
+            i, buffer = self.get_buffers_while(i, query)
 
             # clean the buffer and add it
-            extracted[field].append(self.clean(buffer))
+            extracted[field].append(buffer)
 
+        for field in FIELDS:
+            extracted[field] = self.clean(" ".join(extracted[field]))
         return extracted

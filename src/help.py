@@ -12,14 +12,26 @@ def log(func):
     return inner
 
 
+# encodes the int value to a hex to save space
+def enc(s):
+    return str(hex(s))[2:]
+
+
+# decodes the hex value to an integer for tf-idf and all
+# later on
+def dec(hax):
+    return int("0x" + hax, 16)
+
+
 # IMPORTANT config
 # prints every specified pages, that yes, these many pages have been parsed
 PRINT_LIMIT = 10000
 # dumps every specified pages to avoid the information in inverted
 # index blowing up
 DUMP_LIMIT = 50000
-# number of "threads"
-NUM_PROCESSES = 4
+
+# the total number of documents
+TOTAL = 476811
 
 # mapping from human readable field to dumpable field
 FIELDS = {
@@ -31,15 +43,24 @@ FIELDS = {
     "r": "u",
 }
 
+# config to tune while searching
+# NOTE: empty string represents the vanilla field
+# that is, user has not specified anything
 FIELD_WEIGHTS = {
-    "t": 1,
-    "i": 1,
-    "b": 1,
-    "c": 1,
+    "": 1,
+    "t": 10,
+    "i": 4,
+    "b": 3,
+    "c": 2,
     "l": 1,
     "r": 1,
 }
 
+# multiplied by this amount if a match happens for a query
+BONUS_DEFAULT = 1
+BONUS = 2
+
+# reverse mapping of the fields dumped to be used during searching
 RFIELDS = {
     "p": "t",
     "q": "i",
@@ -48,17 +69,6 @@ RFIELDS = {
     "t": "l",
     "u": "r",
 }
-
-# encodes the int value to a hex to save space
-def enc(s):
-    return str(hex(s))[2:]
-
-
-# decodes the hex value to an integer for tf-idf and all
-# later on
-def dec(hax):
-    return int("0x" + hax, 16)
-
 
 # custom stemmed stopwords
 CUSTOM_STOPWORDS = [
