@@ -14,6 +14,7 @@ class ContentHandler(sx.ContentHandler):
         self.curr_tag = ""
 
         # handles all the page related stuff
+        # page count is the same as the page id
         self.page_count = 0
         self.page = defaultdict(list)
         self.pages = Pages(path_to_inverted_index)

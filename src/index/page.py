@@ -23,12 +23,15 @@ class Pages:
     def save_page(self, page_id, page):
         """
         adds information to the inverted_index
+
+        NOTE: can later convert all tf="1" values to tf="" to save space
         """
         # title added directly, without any thought
         self.titles.append("".join(page["title"]).strip())
 
         # page handing starts
-        extracted_page = self.extract.extract(page)
+        self.extract.extract(page)
+        extracted_page = self.extract.extracted_page
 
         # keeps a track of all the words encountered currently
         words = set()
@@ -91,10 +94,12 @@ class Pages:
         for word in sorted(self.inverted_index):
             word_data = []
             for page_id in self.inverted_index[word]:
+                # concatenate the data for a given word, for a given page_id
                 word_data.append(
                     enc(page_id) + ":" + "".join(self.inverted_index[word][page_id])
                 )
 
+            # have a ; between information of each page
             full_data.append(word + " " + ";".join(word_data))
 
         with open(
