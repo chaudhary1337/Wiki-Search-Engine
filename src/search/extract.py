@@ -1,8 +1,9 @@
 from collections import defaultdict
-from misc import CUSTOM_STOPWORDS, FIELDS
 
 from nltk.corpus import stopwords
 import Stemmer
+
+from help import CUSTOM_STOPWORDS, FIELDS
 
 
 class Extract:
@@ -32,7 +33,18 @@ class Extract:
             i += 1
         return i, "".join(buffer).strip()
 
-    def parse(self, query):
+    def extract(self, query):
+        """
+        extracts all the information of a query
+        requires the vanilla keywords to be present at the start
+
+        returns a dictionary of {
+            field: list(list(stemmed keywords))
+        }
+
+        the field for vanilla keywords is ""
+        for the rest is the first word of the supported fields
+        """
         i = 0
         extracted = defaultdict(list)
 
@@ -50,19 +62,4 @@ class Extract:
             # clean the buffer and add it
             extracted[field].append(self.clean(buffer))
 
-        return extracted
-
-    def extract(self, query):
-        """
-        extracts all the information of a query
-        requires the vanilla keywords to be present at the start
-
-        returns a dictionary of {
-            field: list(list(stemmed keywords))
-        }
-
-        the field for vanilla keywords is ""
-        for the rest is the first word of the supported fields
-        """
-        extracted = self.parse(query)
         return extracted

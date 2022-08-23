@@ -1,7 +1,7 @@
 from search.extract import Extract
-from help import DUMP_LIMIT, FIELD_WEIGHTS, dec
+from help import DUMP_LIMIT, FIELD_WEIGHTS, FIELDS, RFIELDS, dec
 
-from collections import Counter
+from collections import Counter, defaultdict
 
 
 class Search:
@@ -10,6 +10,8 @@ class Search:
         self.path_to_inverted_index = path_to_inverted_index
 
     def search_token(self, token, field):
+        field_id = FIELDS[field]
+
         mini_token = token[:3]
         n = len(token)
         data = None
@@ -20,27 +22,42 @@ class Search:
                     token, data = line.split()
                     break
 
-        field_data = data.split(";")[field]
-        if not field_data:
+        pages = data.split(";")
+
+        if len(pages) == 0:
             return {}
 
-        pages = field_data.split(",")
-        if not pages:
-            return {}
-
-        token_counter = Counter()
+        field_matches = defaultdict(int)
         for page in pages:
-            page_id, freq = map(dec, page.split(":"))
-            token_counter[page_id] += freq * FIELD_WEIGHTS[field]
+            page_id, field_data = page.split(":")
 
-        return token_counter
+            i = 0
+            buffer = []
+            while i < len(field_data):
+                while i < len(field_data) and field_data[i] not in RFIELDS:
+                    buffer.append(field_data[i])
+                    i += 1
+
+                # if the current buffer is useful, store it
+                # since the current field is matching
+                if field_data[i] == field_id:
+                    field_matches[dec(page_id) - 1] += (
+                        dec("".join(buffer)) * FIELD_WEIGHTS[field]
+                    )
+
+                # by default, reset the buffer
+                # and increase the counter
+                buffer = []
+                i += 1
+
+        return field_matches
 
     def search(self, query, k=10):
         # extracted_query = self.extract.extract(query)
 
         query_counter = Counter()
         for token in query.split():
-            query_counter += self.search_token(token, 2)
+            query_counter += self.search_token(token, "b")
 
         topk = query_counter.most_common(k)
 

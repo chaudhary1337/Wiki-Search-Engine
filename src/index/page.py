@@ -24,10 +24,11 @@ class Pages:
         """
         adds information to the inverted_index
         """
+        # title added directly, without any thought
         self.titles.append("".join(page["title"]).strip())
 
+        # page handing starts
         extracted_page = self.extract.extract(page)
-        print(extracted_page["b"])
 
         # keeps a track of all the words encountered currently
         words = set()
@@ -45,23 +46,23 @@ class Pages:
 
         # storing all the information
         for word in words:
-            for field in FIELDS:
-                # if this combination is unseen, create a new list
-                if field not in self.inverted_index[word]:
-                    self.inverted_index[word][field] = []
+            # for this word
+            # and for this page id
+            self.inverted_index[word][page_id] = []
 
-                # if the term frequency is 0, simply skip over this field
+            for field in FIELDS:
+                # if the frequency of the word in a field is 0
+                # skip
                 if frequency[field][word] == 0:
                     continue
 
-                self.inverted_index[word][field].append(
-                    # for a given word
-                    # in a given field
-                    # here is the page id and the term freq
-                    enc(page_id)
-                    + ":"
-                    + enc(frequency[field][word])
-                )
+                # getting the encoded tf
+                tf = enc(frequency[field][word])
+                # getting the field_id and NOT the field itself
+                field_id = FIELDS[field]
+
+                # appending in list
+                self.inverted_index[word][page_id].append(tf + field_id)
 
         # if the number of pages parsed crosses the dump limit
         # then self trigger the dump
@@ -75,32 +76,31 @@ class Pages:
 
         format:
 
-        word field1;field2;field3;field4;field5;field6
+        word page_id:tf1fid1tf2fid2;page_id:...
 
-        where field1 is
-        page_id1:term_freq1,page_id2:term_freq2
+        where fid1 and tf1 represent the field id and the term frequency
+
 
         NOTE:
-        can later add something like word overall_freq field1;...
+        can later add something like word overall_freq page_id:...
         basically, add the overall term frequency
         """
 
-        word_data = []
         # goes over all the words in sorted ordering
+        full_data = []
         for word in sorted(self.inverted_index):
-            field_data = [""] * len(FIELDS)
+            word_data = []
+            for page_id in self.inverted_index[word]:
+                word_data.append(
+                    enc(page_id) + ":" + "".join(self.inverted_index[word][page_id])
+                )
 
-            for field_id, field in enumerate(FIELDS):
-                page_data = self.inverted_index[word][field]
-                field_data[field_id] = ",".join(page_data)
-
-            # joins all the field_data for each field by a semicolon
-            word_data.append(word + " " + ";".join(field_data))
+            full_data.append(word + " " + ";".join(word_data))
 
         with open(
             f"{self.path_to_inverted_index}/index{self.save_counter}.txt", "w"
         ) as f:
-            f.write("\n".join(word_data))
+            f.write("\n".join(full_data))
 
         with open(
             f"{self.path_to_inverted_index}/title{self.save_counter}.txt", "w"

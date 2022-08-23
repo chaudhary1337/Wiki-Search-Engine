@@ -32,11 +32,12 @@ class ContentHandler(sx.ContentHandler):
         if name != "page":
             return
 
-        # save the page
-        self.pages.save_page(self.page_count, self.page)
-
+        # logging
         if self.page_count and self.page_count % PRINT_LIMIT == 0:
             print(f"Parsed {self.page_count} pages.")
+
+        # save the page
+        self.pages.save_page(self.page_count, self.page)
 
         # prepare for the next page
         self.page_count += 1

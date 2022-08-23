@@ -18,6 +18,8 @@ PRINT_LIMIT = 10000
 # dumps every specified pages to avoid the information in inverted
 # index blowing up
 DUMP_LIMIT = 50000
+# number of "threads"
+NUM_PROCESSES = 4
 
 # mapping from human readable field to dumpable field
 FIELDS = {
@@ -29,7 +31,14 @@ FIELDS = {
     "r": "u",
 }
 
-FIELD_WEIGHTS = [1] * len(FIELDS)
+FIELD_WEIGHTS = {
+    "t": 1,
+    "i": 1,
+    "b": 1,
+    "c": 1,
+    "l": 1,
+    "r": 1,
+}
 
 RFIELDS = {
     "p": "t",

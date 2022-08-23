@@ -53,30 +53,6 @@ class Merge:
 
         return files
 
-    def get_merged_data(self, all_data):
-        # merging all the field specific data
-        # that is, get ALL the possible titles for a word
-        # from all the files
-        merged_data = [[] for _ in range(len(FIELDS))]
-
-        # going over all the individual lines from different files
-        # for a single word
-
-        for data in all_data:
-            for i, field_data in enumerate(data.split(";")):
-                if not field_data:
-                    continue
-
-                merged_data[i].append(field_data)
-
-        # merging all the same field data from all the diff files
-        for i in range(len(FIELDS)):
-            merged_data[i] = ",".join(merged_data[i])
-
-        # formatting in the same format as used for index saving
-        return ";".join(merged_data)
-
-    @log
     def merge(self):
         files = self.get_files()
         heapify(files)
@@ -106,5 +82,5 @@ class Merge:
                 if smallest_file.move_next():
                     heappush(files, smallest_file)
 
-            f.write(token + " " + self.get_merged_data(all_data) + "\n")
+            f.write(token + " " + ";".join(all_data) + "\n")
             f.close()

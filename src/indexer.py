@@ -1,43 +1,44 @@
-from index.handler import ContentHandler
-from index.merger import Merge
-from misc import log
+"""
+the primary file which handles the indexing part
+
+1. indexing
+2. merging
+"""
 
 import sys
 from xml import sax as sx
 
+from help import log
+from index.merge import Merge
+from index.handle import ContentHandler
+
 
 @log
-def main():
-    # extracts the arguments provided
-    path_to_wiki_dump = sys.argv[1]
-    path_to_inverted_index = sys.argv[2]
-
+def index():
     # creates a parser for the content
     parser = sx.make_parser()
+
     # creates a content handler object to handle all the
     # content from the xml file
     content_handler = ContentHandler(path_to_inverted_index)
     parser.setContentHandler(content_handler)
-
-    # parsing the wiki data dump
     parser.parse(path_to_wiki_dump)
 
-    # final message
-    print(f"Completed indexing of {content_handler.page_count} pages.")
+    print(f"> Parsed total of {content_handler.page_count} pages.")
+    print(f"> Saved pages a total of {content_handler.pages.save_counter} times.")
+    return
 
-    # prints the required stats
-    with open("invertedindex_stat.txt", "w") as f:
-        f.write(
-            str(content_handler.total_tokens)
-            + "\n"
-            + str(content_handler.total_tokens_inverted_index)
-            + "\n"
-        )
 
-    # merge
+@log
+def merge():
     merge = Merge(path_to_inverted_index)
     merge.merge()
 
 
 if __name__ == "__main__":
-    main()
+    # extracts the arguments provided
+    path_to_wiki_dump = sys.argv[1]
+    path_to_inverted_index = sys.argv[2]
+
+    index()
+    merge()
