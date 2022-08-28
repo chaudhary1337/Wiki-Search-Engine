@@ -1,3 +1,4 @@
+from string import ascii_lowercase, digits
 from help import CUSTOM_STOPWORDS, FIELDS
 
 from nltk.corpus import stopwords
@@ -16,136 +17,121 @@ class Extract:
         self.stopwords = set(self.nltk_stopwords + self.custom_stopwords)
         self.stemwords = Stemmer.Stemmer("english").stemWords
 
-        self.extracted_page = {field: None for field in FIELDS}
+        # a mapping from words to their stemmed versions
+        # saves on time, since stemming is the heaviest operation
+        self.stemword_d = {}
 
-    def process(self, text):
-        # removes the junk
-        text = re.sub("&lt|&gt|&amp|&quot|&apos|&nbsp", "", text)
-        # removes the links
-        text = re.sub("http[^ ]*", " ", text)
-        # remove the comments
-        text = re.sub("<!--.*-->", " ", text)
-        # converting all useful characters to a space
-        # so that it is preserved
-        text = re.sub("\n|:", " ", text)
-        # filers out the non-alphanumeric characters
-        text = re.sub("[^0-9a-z\s]", "", text)
+        # this is the page information that will be used directly
+        # outside of this class
+        # NOTE: needs to be flushed for another page.
+        self.extracted_page = {field: [] for field in FIELDS}
 
-        return text
+    def clean(self, text):
+        return re.sub("[^0-9a-z ]", " ", text)
+
+    def fix(self, text, c=" "):
+        return c.join(text).lower() if type(text) == list else text.lower()
+
+    def stem(self, tokens):
+        tokens_stemmed = []
+        for token in tokens:
+            if token not in self.stemword_d:
+                self.stemword_d[token] = self.stemwords([token])[0]
+            tokens_stemmed.append(self.stemword_d[token])
+
+        return tokens_stemmed
 
     def tokenize(self, text):
         tokens = text.split()
+        tokens = [token for token in tokens if 3 <= len(token) < 15]
+        tokens = self.stem(tokens)
         tokens = [token for token in tokens if token not in self.stopwords]
-        tokens = [token for token in tokens if 2 <= len(token) < 15]
-        tokens = self.stemwords(tokens)
         return tokens
 
+    def fix_line(self, line):
+        return self.tokenize(self.clean(line.strip()))
+
     def extract_title(self, title):
-        self.extracted_page["t"] = self.tokenize(self.process(title))
+        title = self.fix(title)
+        title = self.clean(title)
+        title = self.tokenize(title)
+        self.extracted_page["t"] = title
+        return
 
-    def extract_infobox(self, text):
-        n = len(text)
-        infoboxes = []
-        for ib in re.finditer("{{infobox", text):
-            brackets = 0
-            for i in range(ib.start(), n):
-                # if a bracket
-                # do a +1 or -1 if { or } respectively
-                if text[i] in "{}":
-                    brackets += 1 if text[i] == "{" else -1
-                # if we have used up all the brackets
-                # we are at the end of the infobox
+    def get_infobox(self, lines, i):
+        infobox = []
+
+        brackets = 0
+        completed = False
+
+        while i < len(lines):
+            line = lines[i]
+
+            for c in line:
+                if c in "{}":
+                    brackets += 1 if c == "{" else -1
+
                 if brackets == 0:
-                    break
-            # string splicing, might consider
-            # speeding this up later
-            infoboxes.append(text[ib.start() : i])
+                    completed = True
 
-        self.extracted_page["i"] = self.tokenize(self.process(" ".join(infoboxes)))
-
-    def extract_body(self, text):
-        self.extracted_page["b"] = self.tokenize(self.process(text))
-
-    def extract_category(self, text):
-        categories = " ".join(re.findall("\[\[category:(.*)\]\]", text))
-        categories = re.sub("[^0-9a-z ]", " ", categories)
-
-        self.extracted_page["c"] = self.tokenize("".join(categories))
-
-    def extract_link(self, text):
-        ending = re.split("==\ *external links\ *==", text)
-
-        # if no links present, sad
-        if len(ending) == 1:
-            return []
-
-        links = []
-
-        for line in ending[1].split("\n"):
-            # if starts with a star, is a reference
-            if line and line[0] == "*":
-                links.append(line)
-            # belongs to another sub-heading: {{DEFAULTSORT:...}}
-            elif len(line) > 2 and line[0] == line[1] == "{" and line[2] == "D":
+            infobox.extend(self.fix_line(line))
+            if completed:
                 break
-            # belongs to another sub-heading: [[Category:...]]
-            elif len(line) > 2 and line[0] == line[1] == "[" and line[2] == "C":
+            i += 1
+
+        self.extracted_page["i"].extend(infobox)
+        return i
+
+    def get_body(self, lines, i):
+        self.extracted_page["b"].extend(self.tokenize(self.clean(lines[i].strip())))
+        return i
+
+    def get_category(self, lines, i):
+        self.extracted_page["c"].extend(self.fix_line(lines[i]))
+        return i
+
+    def get_external(self, lines, i):
+        external = []
+        while i < len(lines):
+            line = lines[i]
+            if line.startswith(" [[") or line.startswith(" {{default"):
                 break
-            else:
-                continue
 
-        self.extracted_page["l"] = self.tokenize(self.process("".join(links)))
+            # remove link themselves, keep the rest
+            line = re.sub("http[^ ]*", " ", line)
+            external.extend(self.fix_line(line))
 
-    def extract_reference(self, text):
-        ending = re.split("==\ *references\ *==", text)
+            i += 1
 
-        # if no ref present, sad
-        if len(ending) == 1:
-            return []
+        self.extracted_page["l"].extend(external)
+        return i
 
-        references = []
+    def extract_text(self, text):
+        text = self.fix(text)
+        lines = text.split("\n")
 
-        for line in ending[1].split("\n"):
-            # if starts with a star, is a reference
-            if line and line[0] == "*":
-                references.append(line)
-            # if heading is ===ASDF===, then is allowed
-            # if heading is ==WOW== then its not, since it
-            # belongs to another sub-heading
-            elif len(line) > 2 and line[0] == line[1] == "=" and line[2] != "=":
-                break
-            else:
-                continue
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            # if line.startswith("{{infobox") or line.startswith("{{ infobox"):
+            #     i = self.get_infobox(lines, i)
+            # elif line.startswith("[[category:"):
+            #     i = self.get_category(lines, i)
+            if (
+                line.startswith(" == external links")
+                or line.startswith(" ==external links")
+                or line.startswith(" === external links")
+                or line.startswith(" ===external links")
+            ):
+                i = self.get_external(lines, i)
+            # else:
+            #     i = self.get_body(lines, i)
 
-        self.extracted_page["r"] = self.tokenize(self.process("".join(references)))
+            i += 1
 
     def extract(self, page):
-        title = "".join(page["title"]).lower()
-        self.extract_title(title)
+        # self.extract_title(page["title"])
+        self.extract_text(page["text"])
 
-        text = "".join(page["text"]).lower()
-        if "#REDIRECT" == text[: len("#REDIRECT")]:
-            return
-
-        functions = [
-            self.extract_infobox,
-            self.extract_body,
-            self.extract_category,
-            self.extract_link,
-            self.extract_reference,
-        ]
-
-        # just run those functions one by one
-        for function in functions:
-            function(text)
-
-        # THIS KIND OF MULTPROCESSING TAKES TOO LONG
-        # DO NOT DO IT
-        # processes = []
-        # for function in functions:
-        #     process = Process(target=function, args=[text])
-        #     process.start()
-        #     processes.append(process)
-
-        # for process in processes:
-        #     process.join()
+    def flush(self):
+        self.extracted_page = {field: [] for field in FIELDS}

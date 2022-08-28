@@ -33,7 +33,7 @@ def index():
 def merge():
     merge = Merge(path_to_inverted_index)
     merge.merge()
-    merge.clean_index()
+    # merge.clean_index()
 
 
 if __name__ == "__main__":

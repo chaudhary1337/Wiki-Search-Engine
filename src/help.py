@@ -108,4 +108,5 @@ CUSTOM_STOPWORDS = [
     "cite",
     "websit",
     "caption",
+    "link",
 ]
