@@ -1,15 +1,21 @@
 import time
 
 # a logger function, keeps a track of the total running time
-def log(func):
-    def inner(*args, **kwargs):
-        start_time = time.time()
-        print(f'Running: "{func.__name__}" ...')
-        func(*args, **kwargs)
-        end_time = time.time()
-        print(f"Done: '{func.__name__}'. Taken {round(end_time-start_time, 4)}s")
+def log(end="\n", show_text=True):
+    def logger(func):
+        def inner(*args, **kwargs):
+            start_time = time.time()
+            if show_text:
+                print(f'Running: "{func.__name__}" ... ', end=end)
+            func(*args, **kwargs)
+            end_time = time.time()
+            if show_text:
+                print(f"Done: '{func.__name__}'. ", end="")
+            print(f"Taken {round(end_time-start_time, 4)}s")
 
-    return inner
+        return inner
+
+    return logger
 
 
 # encodes the int value to a hex to save space
@@ -57,8 +63,8 @@ FIELD_WEIGHTS = {
 }
 
 # multiplied by this amount if a match happens for a query
-BONUS_DEFAULT = 1
-BONUS = 2
+BONUS_DEFAULT = 0
+BONUS = 1
 
 # reverse mapping of the fields dumped to be used during searching
 RFIELDS = {
