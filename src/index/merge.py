@@ -1,5 +1,3 @@
-from help import FIELDS, log
-
 from heapq import heapify, heappush, heappop
 import os
 
@@ -34,9 +32,10 @@ class FileHandler:
 class Merge:
     def __init__(self, path_to_inverted_index):
         self.path_to_inverted_index = path_to_inverted_index
+        self.file_names = self.get_files()
 
     def get_files(self):
-        files = []
+        file_names = []
         for path in os.scandir(self.path_to_inverted_index):
             # if a dir, skip
             if not path.is_file():
@@ -44,17 +43,28 @@ class Merge:
 
             # get the file name from the path
             file_name = path.name
-            if file_name[: len("index")] != "index":
+            if not file_name.startswith("index"):
                 continue
 
-            # then create a file handler to be used in the heap
-            f = open(f"{self.path_to_inverted_index}/{file_name}", "r")
-            files.append(FileHandler(f, file_name[len("index") :]))
+            file_names.append(f"{self.path_to_inverted_index}/{file_name}")
 
+        return file_names
+
+    def get_file_handlers(self):
+        files = []
+        for file_name in self.file_names:
+            f = open(file_name, "r")
+            files.append(FileHandler(f, file_name[len("index") :]))
         return files
 
+    # REMOVES all the index files
+    # since they are not needed after the merge
+    def clean_index(self):
+        for file_name in self.file_names:
+            os.remove(file_name)
+
     def merge(self):
-        files = self.get_files()
+        files = self.get_file_handlers()
         heapify(files)
 
         while files:
