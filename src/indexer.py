@@ -13,7 +13,7 @@ from index.merge import Merge
 from index.handle import ContentHandler
 
 
-@log
+@log()
 def index():
     # creates a parser for the content
     parser = sx.make_parser()
@@ -29,10 +29,11 @@ def index():
     return
 
 
-@log
+@log()
 def merge():
     merge = Merge(path_to_inverted_index)
     merge.merge()
+    merge.clean_index()
 
 
 if __name__ == "__main__":

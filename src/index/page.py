@@ -26,12 +26,13 @@ class Pages:
 
         NOTE: can later convert all tf="1" values to tf="" to save space
         """
-        # title added directly, without any thought
+        # title added directly, since that is required for searching
         self.titles.append("".join(page["title"]).strip())
 
-        # page handing starts
+        # page handing
         self.extract.extract(page)
         extracted_page = self.extract.extracted_page
+        self.extract.flush()
 
         # keeps a track of all the words encountered currently
         words = set()
@@ -72,7 +73,7 @@ class Pages:
         if page_id and page_id % DUMP_LIMIT == 0:
             self.save_pages()
 
-    @log
+    @log(end="")
     def save_pages(self):
         """
         dumps the inverted_index

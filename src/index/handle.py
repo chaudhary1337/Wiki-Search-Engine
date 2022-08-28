@@ -1,7 +1,7 @@
 from collections import defaultdict
 from xml import sax as sx
 
-from help import PRINT_LIMIT
+from help import PRINT_LIMIT, log
 from index.page import Pages
 
 
