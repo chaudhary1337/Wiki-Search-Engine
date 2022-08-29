@@ -39,6 +39,8 @@ DUMP_LIMIT = 50000
 # the total number of documents
 TOTAL = 476811
 
+STEM_CACHE = 10000000
+
 # mapping from human readable field to dumpable field
 FIELDS = {
     "t": "p",

@@ -3,13 +3,20 @@ from string import ascii_lowercase, digits
 from nltk.corpus import stopwords
 import Stemmer
 
-from help import CUSTOM_STOPWORDS, FIELDS
+from help import CUSTOM_STOPWORDS, FIELDS, STEM_CACHE
 
 
 class Extract:
     def __init__(self):
         self.stopwords = set(stopwords.words("english") + CUSTOM_STOPWORDS)
-        self.stemmer = Stemmer.Stemmer("english").stemWords
+        # self.stemmer = Stemmer.Stemmer("english").stemWords
+        self.stemmer = Stemmer.Stemmer("english")
+        self.stemmer.maxCacheSize = STEM_CACHE
+        self.stemwords = self.stemmer.stemWords
+
+        # regex
+        self.re_links = re.compile("http[^ ]*")
+        self.re_nonalpha = re.compile("[^0-9a-z ]")
 
         # a mapping from words to their stemmed versions
         # saves on time, since stemming is the heaviest operation
@@ -22,7 +29,7 @@ class Extract:
 
     def is_valid(self, token):
         return not (
-            not 2 <= len(token) <= 15
+            not 2 <= len(token) <= 13
             or token in self.stopwords
             or (token[0] in digits and len(token) > 4)
             or (
@@ -31,26 +38,19 @@ class Extract:
             )
         )
 
-    def stem(self, tokens):
-        tokens_stemmed = []
-        for token in tokens:
-            if token not in self.stemword_d:
-                self.stemword_d[token] = self.stemmer([token])[0]
-            tokens_stemmed.append(self.stemword_d[token])
-
-        return tokens_stemmed
-
     def tokenize(self, text):
-        text = re.sub("http[^ ]*", " ", text)
-        text = re.sub("[^0-9a-z ]", " ", text)
+        text = self.re_links.sub(" ", text)
+        text = self.re_nonalpha.sub(" ", text)
+
         tokens = text.split()
         tokens = [token for token in tokens if self.is_valid(token)]
-        tokens = self.stem(tokens)
+        tokens = self.stemwords(tokens)
+
         return tokens
 
     def extract_title(self, title):
         title = " ".join(title).lower()
-        self.extracted_page["t"].extend(self.tokenize(title))
+        self.extracted_page["t"].append(title)
 
     def is_infobox(self, lines, i):
         return lines[i].startswith("{{infobox") or lines[i].startswith("{{ infobox")
@@ -61,7 +61,7 @@ class Extract:
 
         while i < len(lines):
             line = lines[i]
-            self.extracted_page["i"].extend(self.tokenize(line))
+            self.extracted_page["i"].append(line)
 
             # handles the logic to end the infobox
             for c in line:
@@ -80,7 +80,7 @@ class Extract:
         return i
 
     def get_body(self, lines, i):
-        self.extracted_page["b"].extend(self.tokenize(lines[i]))
+        self.extracted_page["b"].append(lines[i])
         return i
 
     def is_category(self, lines, i):
@@ -89,7 +89,7 @@ class Extract:
     def get_category(self, lines, i):
         while i < len(lines):
             line = lines[i]
-            self.extracted_page["c"].extend(self.tokenize(line))
+            self.extracted_page["c"].append(line)
 
             if not line.startswith("[[category:"):
                 break
@@ -112,7 +112,7 @@ class Extract:
             if line.startswith("{{default") or line.startswith("[["):
                 break
 
-            self.extracted_page["l"].extend(self.tokenize(line))
+            self.extracted_page["l"].append(line)
             i += 1
 
         return i
@@ -132,7 +132,7 @@ class Extract:
             if line.startswith("==") and len(line) > 2 and line[2] != "=":
                 break
 
-            self.extracted_page["r"].extend(self.tokenize(line))
+            self.extracted_page["r"].append(line)
             i += 1
 
         return i
@@ -141,7 +141,7 @@ class Extract:
         references = re.findall(r"\< ref \>(.*?)\< \/ref \>", text)
 
         for reference in references:
-            self.extracted_page["r"].extend(self.tokenize(reference))
+            self.extracted_page["r"].append(reference)
         return
 
     def extract_text(self, text):
@@ -167,6 +167,12 @@ class Extract:
     def extract(self, page):
         self.extract_title(page["title"])
         self.extract_text(page["text"])
+
+        # tokenizing all the field informations
+        for field in FIELDS:
+            self.extracted_page[field] = self.tokenize(
+                " ".join(self.extracted_page[field])
+            )
 
     def flush(self):
         self.extracted_page = {field: [] for field in FIELDS}

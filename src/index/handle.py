@@ -1,4 +1,5 @@
 from collections import defaultdict
+from time import time
 from xml import sax as sx
 
 from help import PRINT_LIMIT, log
@@ -10,8 +11,9 @@ class ContentHandler(sx.ContentHandler):
         # setup
         self.path_to_inverted_index = path_to_inverted_index
 
-        # keeping a track of the current tag
+        # keeping a track of the current stuff
         self.curr_tag = ""
+        self.time = time()
 
         # handles all the page related stuff
         # page count is the same as the page id
@@ -35,7 +37,11 @@ class ContentHandler(sx.ContentHandler):
 
         # logging
         if self.page_count and self.page_count % PRINT_LIMIT == 0:
-            print(f"Parsed {self.page_count} pages.")
+            curr_time = time()
+            print(
+                f"Parsed {self.page_count} pages. Taken {round(curr_time - self.time, 4)}"
+            )
+            self.time = curr_time
 
         # save the page
         self.pages.save_page(self.page_count, self.page)
