@@ -6,6 +6,7 @@ class FileHandler:
     def __init__(self, f, num):
         self.f = f
         self.num = num
+        self.token = None
         self.move_next()
 
     # adding a comparison for the heap
@@ -70,6 +71,8 @@ class Merge:
         while files:
             # pop out the smalles value
             smallest_file = heappop(files)
+            if not smallest_file.token:
+                continue
             token, data = smallest_file.token, smallest_file.data
 
             # mini token is the first 3 chars
