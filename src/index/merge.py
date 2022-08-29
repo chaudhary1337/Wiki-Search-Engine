@@ -69,23 +69,20 @@ class Merge:
         heapify(files)
 
         while files:
-            # pop out the smalles value
-            smallest_file = heappop(files)
-            if not smallest_file.token:
+            # finds the smallest token
+            token = files[0].token
+
+            if not token:
+                heappop(files)
                 continue
-            token, data = smallest_file.token, smallest_file.data
 
             # mini token is the first 3 chars
             mini_token = token[:3]
             # opening the file of the mini token
             f = open(f"{self.path_to_inverted_index}/merged_{mini_token}.txt", "a+")
 
-            # store all the data for the current token
-            all_data = [data]
-
-            # move the file pointer to the next line
-            if smallest_file.move_next():
-                heappush(files, smallest_file)
+            # store all the data
+            all_data = []
 
             # adding all the document information for a token
             while files and files[0].token == token:
