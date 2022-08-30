@@ -97,11 +97,13 @@ class Pages:
             for page_id in self.inverted_index[word]:
                 # concatenate the data for a given word, for a given page_id
                 word_data.append(
-                    enc(page_id) + ":" + "".join(self.inverted_index[word][page_id])
+                    "".join(
+                        [enc(page_id), ":", "".join(self.inverted_index[word][page_id])]
+                    )
                 )
 
             # have a ; between information of each page
-            full_data.append(word + " " + ";".join(word_data))
+            full_data.append("".join([word, " ", ";".join(word_data)]))
 
         with open(
             f"{self.path_to_inverted_index}/index{self.save_counter}.txt", "w"

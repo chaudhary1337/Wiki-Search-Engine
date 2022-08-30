@@ -9,18 +9,14 @@ from help import CUSTOM_STOPWORDS, FIELDS, STEM_CACHE
 class Extract:
     def __init__(self):
         self.stopwords = set(stopwords.words("english") + CUSTOM_STOPWORDS)
-        # self.stemmer = Stemmer.Stemmer("english").stemWords
         self.stemmer = Stemmer.Stemmer("english")
         self.stemmer.maxCacheSize = STEM_CACHE
         self.stemwords = self.stemmer.stemWords
 
-        # regex
+        # regex compiled for *speed*
         self.re_links = re.compile("http[^ ]*")
         self.re_nonalpha = re.compile("[^0-9a-z ]")
-
-        # a mapping from words to their stemmed versions
-        # saves on time, since stemming is the heaviest operation
-        self.stemword_d = {}
+        self.re_refs = re.compile(r"\< ref \>(.*?)\< \/ref \>")
 
         # this is the page information that will be used directly
         # outside of this class
@@ -138,7 +134,7 @@ class Extract:
         return i
 
     def get_other_references(self, text):
-        references = re.findall(r"\< ref \>(.*?)\< \/ref \>", text)
+        references = self.re_refs.findall(text)
 
         for reference in references:
             self.extracted_page["r"].append(reference)
