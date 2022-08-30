@@ -121,8 +121,8 @@ class Search:
 
         for page_id, score in topk:
             save_counter, line_number = divmod(page_id, DUMP_LIMIT)
-            # NOTE: THIS REMAINS THE ONLY MAJOR BUG/ISSUE IN MY CODE
-            # THIS WORKS, BUT I DO NOT KNOW WHY.
+            # NOTE: THIS REMAINS THE ONLY MAJOR ISSUE IN MY CODE
+            # IT WORKS, BUT I DO NOT KNOW WHY.
             if save_counter != 0:
                 line_number -= 1
 
@@ -137,7 +137,7 @@ class Search:
                 lines = f.readlines()
                 title = lines[line_number].strip()
                 # titles.append(f"[{round(score, 2)}][{page_id}] {title}")
-                titles.append(title)
+                titles.append(f"{page_id}, {title}")
 
             for title in sorted(titles):
                 print(title)

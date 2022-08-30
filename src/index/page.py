@@ -27,7 +27,7 @@ class Pages:
         NOTE: can later convert all tf="1" values to tf="" to save space
         """
         # title added directly, since that is required for searching
-        self.titles.append("".join(page["title"]).strip())
+        self.titles.append("".join(page["title"]).lower().strip())
 
         # page handing
         self.extract.extract(page)

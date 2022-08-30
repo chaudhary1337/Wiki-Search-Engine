@@ -1,0 +1,6 @@
+- search
+    - add search with file functionality && code refactoring
+    - update bash script for search
+- general
+    - add readme with commands
+    - run it once with the entire dataset
