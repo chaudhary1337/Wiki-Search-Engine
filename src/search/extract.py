@@ -45,6 +45,8 @@ class Extract:
         the field for vanilla keywords is ""
         for the rest is the first word of the supported fields
         """
+        query = query.lower()
+
         i = 0
         extracted = defaultdict(list)
 

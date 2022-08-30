@@ -1,6 +1,10 @@
 - search
-    - add search with file functionality && code refactoring
+    - add search with file read functionality
+    - search code refactoring
     - update bash script for search
+- index
+    - add code for stat generation
 - general
-    - add readme with commands
+    - check search for field and non-field queries
+    - add readme with commands and file descriptions
     - run it once with the entire dataset

@@ -1,6 +1,7 @@
 from collections import Counter, defaultdict
 from os.path import exists
 from math import log
+from time import time
 
 from search.extract import Extract
 from help import (
@@ -16,9 +17,11 @@ from help import (
 
 
 class Search:
-    def __init__(self, path_to_inverted_index):
+    def __init__(self, path_to_inverted_index, in_file, out_file):
         self.extract = Extract()
         self.path_to_inverted_index = path_to_inverted_index
+        self.in_file = in_file
+        self.out_file = out_file
 
     def get_token_pages(self, token):
         """
@@ -58,20 +61,21 @@ class Search:
         while i < len(field_data) and field_data[i] not in RFIELDS:
             buffer.append(field_data[i])
             i += 1
-        return i, dec("".join(buffer))
+
+        # if the buffer is empty, then assume value 1
+        return i, dec("".join(buffer)) if buffer else 1
 
     def get_bonus(self, field_data, i, field):
         """
         NOTE: here we use FIELDS since we want to look at human readable format
-
         """
-        if field == "":
-            return BONUS_DEFAULT
-
-        matching = field_data[i] == FIELDS[field]
-        return BONUS_DEFAULT if not matching else BONUS
+        return (
+            BONUS_DEFAULT if (field == "" or field_data[i] != FIELDS[field]) else BONUS
+        )
 
     def search_token(self, token, field):
+        field_matches = defaultdict(int)
+
         pages = self.get_token_pages(token)
 
         # idf is the number of pages this token appears in
@@ -79,9 +83,8 @@ class Search:
         # if the number of pages is 0, then this token is not
         # in the data dump
         if idf == 0:
-            return {}
+            return field_matches
 
-        field_matches = defaultdict(int)
         for page in pages:
             if not page:
                 continue
@@ -106,21 +109,23 @@ class Search:
 
         return field_matches
 
-    def search(self, query, k=10):
-        query_counter = Counter()
+    def search_query(self, query, k=10):
+        start_time = time()
 
         extracted_query = self.extract.extract(query)
-        print(extracted_query)
 
+        query_counter = Counter()
         # has one more key, the "" other than FIELDS
         for field in extracted_query.keys():
             for token in extracted_query[field]:
-                query_counter += self.search_token(token, field)
+                query_counter.update(self.search_token(token, field))
 
         topk = query_counter.most_common(k)
 
+        titles = []
         for page_id, score in topk:
             save_counter, line_number = divmod(page_id, DUMP_LIMIT)
+
             # NOTE: THIS REMAINS THE ONLY MAJOR ISSUE IN MY CODE
             # IT WORKS, BUT I DO NOT KNOW WHY.
             if save_counter != 0:
@@ -132,12 +137,19 @@ class Search:
                 continue
 
             # open the file and read the specified line number
-            titles = []
             with open(path, "r") as f:
                 lines = f.readlines()
                 title = lines[line_number].strip()
-                # titles.append(f"[{round(score, 2)}][{page_id}] {title}")
-                titles.append(f"{page_id}, {title}")
+                titles.append((score, f"{page_id}, {title}"))
 
-            for title in sorted(titles):
-                print(title)
+        titles.extend([(-1, "")] * (10 - len(titles)))
+
+        for score, title in sorted(titles, reverse=True):
+            self.out_file.write(title + "\n")
+
+        self.out_file.write(f"{round(time() - start_time)}\n")
+
+    def search(self):
+        queries = self.in_file.readlines()
+        for query in queries:
+            self.search_query(query)
