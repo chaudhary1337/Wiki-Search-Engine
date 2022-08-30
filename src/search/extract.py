@@ -8,9 +8,7 @@ from help import CUSTOM_STOPWORDS, FIELDS
 
 class Extract:
     def __init__(self):
-        self.nltk_stopwords = stopwords.words("english")
-        self.custom_stopwords = CUSTOM_STOPWORDS
-        self.stopwords = set(self.nltk_stopwords + self.custom_stopwords)
+        self.stopwords = set(stopwords.words("english") + CUSTOM_STOPWORDS)
         self.stemwords = Stemmer.Stemmer("english").stemWords
 
     def clean(self, text):

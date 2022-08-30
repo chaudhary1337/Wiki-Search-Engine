@@ -39,6 +39,7 @@ DUMP_LIMIT = 50000
 # the total number of documents
 TOTAL = 476811
 
+# cache for pystemmer
 STEM_CACHE = 10000000
 
 # mapping from human readable field to dumpable field
@@ -65,8 +66,9 @@ FIELD_WEIGHTS = {
 }
 
 # multiplied by this amount if a match happens for a query
-BONUS_DEFAULT = 0
-BONUS = 1
+BONUS_DEFAULT = 1
+BONUS_MISMATCH = 0
+BONUS = 1.5
 
 # reverse mapping of the fields dumped to be used during searching
 RFIELDS = {
@@ -87,14 +89,14 @@ CUSTOM_STOPWORDS = [
     "ref",
     "reflist",
     "jpg",
-    "descript",
+    "description",
     "redirect",
-    "categori",
+    "category",
     "name",
     "refer",
     "title",
     "date",
-    "imag",
+    "image",
     "author",
     "url",
     "use",
@@ -108,7 +110,7 @@ CUSTOM_STOPWORDS = [
     "org",
     "publish",
     "cite",
-    "websit",
+    "website",
     "caption",
     "link",
 ]

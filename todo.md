@@ -1,5 +1,5 @@
 - search
-    - add search with file read functionality
+    - binary search in search (and have index store file size at the top. also changes by +1 in line number)
     - search code refactoring
     - update bash script for search
 - index
