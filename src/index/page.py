@@ -61,7 +61,8 @@ class Pages:
                     continue
 
                 # getting the encoded tf
-                tf = enc(frequency[field][word])
+                # 1x is saved as x only. search needs to handle such cases.
+                tf = enc(frequency[field][word]) if frequency[field][word] > 1 else ""
                 # getting the field_id and NOT the field itself
                 field_id = FIELDS[field]
 
