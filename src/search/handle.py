@@ -39,7 +39,7 @@ class Search:
 
         with open(path, "r") as f:
             while line := f.readline():
-                if line[: len(token)] != token:
+                if not line.startswith(token):
                     continue
                 token, data = line.split()
                 break
@@ -102,8 +102,7 @@ class Search:
                 score = log(1 + tf) * log(TOTAL / idf) * bonus * FIELD_WEIGHTS[field]
 
                 # for this page_id, increase its ranking by score
-                # NOTE: THIS REMAINS THE ONLY MAJOR BUG/ISSUE IN MY CODE
-                field_matches[dec(page_id) - 1] += score
+                field_matches[dec(page_id)] += score
 
         return field_matches
 
@@ -122,6 +121,10 @@ class Search:
 
         for page_id, score in topk:
             save_counter, line_number = divmod(page_id, DUMP_LIMIT)
+            # NOTE: THIS REMAINS THE ONLY MAJOR BUG/ISSUE IN MY CODE
+            # THIS WORKS, BUT I DO NOT KNOW WHY.
+            if save_counter != 0:
+                line_number -= 1
 
             # try opening the file if possible
             path = f"{self.path_to_inverted_index}/title{save_counter}.txt"
@@ -129,7 +132,12 @@ class Search:
                 continue
 
             # open the file and read the specified line number
+            titles = []
             with open(path, "r") as f:
                 lines = f.readlines()
                 title = lines[line_number].strip()
-                print(f"[{round(score, 2)}] {title}")
+                # titles.append(f"[{round(score, 2)}][{page_id}] {title}")
+                titles.append(title)
+
+            for title in sorted(titles):
+                print(title)
