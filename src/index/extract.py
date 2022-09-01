@@ -69,7 +69,6 @@ class Extract:
 
             if completed:
                 break
-            # completed
 
             i += 1
 
@@ -79,59 +78,24 @@ class Extract:
         self.extracted_page["b"].append(lines[i])
         return i
 
-    def is_category(self, lines, i):
-        return lines[i].startswith("[[category")
+    def get_category(self, lines):
+        cat = "[[category:"
 
-    def get_category(self, lines, i):
-        while i < len(lines):
-            line = lines[i]
-            self.extracted_page["c"].append(line)
+        for line in lines.split("\n"):
+            if line.startswith(cat):
+                self.extracted_page["c"].append(line[len(cat) : -2])
 
-            if not line.startswith("[[category:"):
-                break
-            i += 1
+    def get_link(self, lines):
+        split_lines = lines.split("==external links==")
 
-        return i
+        if len(split_lines) == 2:
+            self.extracted_page["l"].append(split_lines[1])
 
-    def is_link(self, lines, i):
-        return (
-            lines[i] == "== external links =="
-            or lines[i] == "==external links=="
-            or lines[i] == "=== external links ==="
-            or lines[i] == "===external links==="
-        )
+        return
 
-    def get_link(self, lines, i):
-        i += 1
-        while i < len(lines):
-            line = lines[i]
-            if line.startswith("{{default") or line.startswith("[["):
-                break
-
-            self.extracted_page["l"].append(line)
-            i += 1
-
-        return i
-
-    def is_reference(self, lines, i):
-        return (
-            lines[i] == "== references =="
-            or lines[i] == "==references=="
-            or lines[i] == "=== references ==="
-            or lines[i] == "===references==="
-        )
-
-    def get_reference(self, lines, i):
-        i += 1
-        while i < len(lines):
-            line = lines[i]
-            if line.startswith("==") and len(line) > 2 and line[2] != "=":
-                break
-
-            self.extracted_page["r"].append(line)
-            i += 1
-
-        return i
+    def get_reference(self, lines):
+        self.extracted_page["r"].append(lines.split("==", maxsplit=1)[0])
+        return
 
     def get_other_references(self, text):
         references = self.re_refs.findall(text)
@@ -141,24 +105,29 @@ class Extract:
         return
 
     def extract_text(self, text):
-        lines = [line.lower() for line in text]
+        lines = "\n".join(line.lower() for line in text)
+
+        lines = lines.replace("== ", "==")
+        lines = lines.replace(" ==", "==")
+
+        split_lines = lines.split("==references==")
+
+        if len(split_lines) == 2:
+            self.get_category(split_lines[1])
+            self.get_reference(split_lines[1])
+            self.get_link(split_lines[1])
 
         i = 0
-        while i < len(lines):
-            if self.is_infobox(lines, i):
-                i = self.get_infobox(lines, i)
-            elif self.is_category(lines, i):
-                i = self.get_category(lines, i)
-            elif self.is_link(lines, i):
-                i = self.get_link(lines, i)
-            elif self.is_reference(lines, i):
-                i = self.get_reference(lines, i)
+        upper = split_lines[0].split("\n")
+        while i < len(upper):
+            if self.is_infobox(upper, i):
+                i = self.get_infobox(upper, i)
             else:
-                i = self.get_body(lines, i)
+                i = self.get_body(upper, i)
 
             i += 1
 
-        self.get_other_references(" ".join(lines))
+        self.get_other_references(lines)
 
     def extract(self, page):
         self.extract_title(page["title"])
