@@ -1,9 +1,5 @@
 - search
-    - binary search in search (and have index store file size at the top. also changes by +1 in line number)
-    - search code refactoring
-    - update bash script for search
-- index
-    - add code for stat generation
+    - binary search in search (and have index store file size at the top. also changes by +1 in line number) -> just realized - even if i store the #lines at the top of the file, i still have to read all of the lines into memory, worst case. might see this part later.
 - general
     - check search for field and non-field queries
     - add readme with commands and file descriptions

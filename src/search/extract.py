@@ -1,4 +1,5 @@
 from collections import defaultdict
+import re
 
 from nltk.corpus import stopwords
 import Stemmer
@@ -12,6 +13,7 @@ class Extract:
         self.stemwords = Stemmer.Stemmer("english").stemWords
 
     def clean(self, text):
+        text = re.sub("[^0-9a-z ]", " ", text)
         tokens = text.split()
         tokens_nonstop = [token for token in tokens if token not in self.stopwords]
         tokens_stemmed = self.stemwords(tokens_nonstop)

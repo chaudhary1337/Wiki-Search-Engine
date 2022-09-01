@@ -35,12 +35,12 @@ PRINT_LIMIT = 10000
 # dumps every specified pages to avoid the information in inverted
 # index blowing up
 DUMP_LIMIT = 50000
-
 # the total number of documents
 TOTAL = 476811
-
 # cache for pystemmer
 STEM_CACHE = 10000000
+# number of "threads" for multi-processing in python
+NUM_PROCESSES = 4
 
 # mapping from human readable field to dumpable field
 FIELDS = {

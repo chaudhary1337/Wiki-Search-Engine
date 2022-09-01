@@ -1,4 +1,5 @@
 from collections import Counter, defaultdict
+from multiprocessing import Pool
 from os.path import exists
 from math import log
 from time import time
@@ -6,7 +7,7 @@ from time import time
 from search.extract import Extract
 from search.parse import Parse
 
-from help import FIELD_WEIGHTS, TOTAL, dec
+from help import FIELD_WEIGHTS, NUM_PROCESSES, TOTAL, dec
 
 
 class Search:
@@ -53,23 +54,43 @@ class Search:
         return field_matches
 
     def search_query(self, query, k=10):
-        start_time = time()
-
+        # pool = Pool(NUM_PROCESSES)
         extracted_query = self.extract.extract(query)
 
         query_counter = Counter()
+        search_items = []
+
+        start_time = time()
+
         # has one more key, the "" other than FIELDS
         for field in extracted_query.keys():
-            for token in extracted_query[field]:
-                query_counter.update(self.search_token(token, field))
+            for s in extracted_query[field]:
+                for token in s.split():
+                    search_items.append((token, field))
+
+        # pre multi-processing
+        for token, field in search_items:
+            query_counter.update(self.search_token(token, field))
+
+        # results = []
+        # for token, field in search_items:
+        #     results.append(pool.apply_async(self.search_token, args=(token, field)))
+
+        # for result in results:
+        #     print(result.get(10))
+        #     # query_counter.update(result.get())
+
+        # pool.close()
 
         topk = query_counter.most_common(k)
         titles = self.parse.get_titles(topk)
 
+        end_time = time()
+
         for score, title in sorted(titles, reverse=True):
             self.out_file.write(title + "\n")
 
-        self.out_file.write(f"{round(time() - start_time)}\n\n")
+        self.out_file.write(f"{round(end_time - start_time)}\n\n")
 
     def search(self):
         queries = self.in_file.readlines()
