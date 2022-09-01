@@ -5,8 +5,10 @@ the primary file which handles the indexing part
 2. merging
 """
 
+from pathlib import Path
 import sys
 from xml import sax as sx
+import os
 
 from help import log
 from index.merge import Merge
@@ -33,7 +35,16 @@ def index():
 def merge():
     merge = Merge(path_to_inverted_index)
     merge.merge()
-    merge.clean_index()
+    # merge.clean_index()
+
+    directory_size = sum(
+        p.stat().st_size for p in Path(path_to_inverted_index).rglob("*")
+    ) / (1024**3)
+
+    with open("stats.txt", "w") as f:
+        f.write(f"{round(directory_size)}\n")
+        f.write(f"{len(merge.file_names)}\n")
+        f.write(f"{merge.num_tokens}\n")
 
 
 if __name__ == "__main__":

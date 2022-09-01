@@ -34,6 +34,7 @@ class Merge:
     def __init__(self, path_to_inverted_index):
         self.path_to_inverted_index = path_to_inverted_index
         self.file_names = self.get_files()
+        self.num_tokens = 0
 
     def get_files(self):
         file_names = []
@@ -94,3 +95,5 @@ class Merge:
 
             f.write(token + " " + ";".join(all_data) + "\n")
             f.close()
+
+            self.num_tokens += 1

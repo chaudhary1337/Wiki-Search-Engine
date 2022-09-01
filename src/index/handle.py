@@ -2,7 +2,7 @@ from collections import defaultdict
 from time import time
 from xml import sax as sx
 
-from help import PRINT_LIMIT, log
+from help import PRINT_LIMIT
 from index.page import Pages
 
 
