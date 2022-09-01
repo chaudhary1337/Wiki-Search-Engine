@@ -102,7 +102,7 @@ class Pages:
                 )
 
             # have a ; between information of each page
-            full_data.append(f"{word};{';'.join(word_data)}")
+            full_data.append(f"{word} {';'.join(word_data)}")
 
         with open(
             f"{self.path_to_inverted_index}/index{self.save_counter}.txt", "w"

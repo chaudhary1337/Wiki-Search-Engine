@@ -35,7 +35,7 @@ def index():
 def merge():
     merge = Merge(path_to_inverted_index)
     merge.merge()
-    # merge.clean_index()
+    merge.clean_index()
 
     directory_size = sum(
         p.stat().st_size for p in Path(path_to_inverted_index).rglob("*")
