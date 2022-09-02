@@ -1,7 +1,7 @@
 # Wiki-Search-Engine
 
 ## The Idea
-Search Engine.
+Create a search engine from scratch.
 
 ## Indexer
 Run: `bash index.sh ./path/to/wikidump /tmp/indices && cat stats.txt`.
@@ -59,4 +59,26 @@ Run: `bash search.sh && cat queries_op.txt`.
 
 The `/src/searcher.py` is the "main" indexer file that runs everything else.
 
-*More readme info to be added later.*
+### `extract.py`
+
+The function `extract()` returns a dictionary with keys as the fields and values as string of all the tokens of that field.
+
+### `parse.py`
+
+This file provides helper functions that deal with reading information from the merged indices. We use `get_tf_bonus()` which gets us both the term frequencies and the bonus scoring multiplier. This multiplier is used to weigh the fields and rank the documents.
+
+### `handle.py`
+
+This is where we do the primary computations. Using the help of `parser.py`'s functions, we get the line of documents associated with a token and then extract out all the documents which satisfy the field conditions. Scores are thus assigned to all the documents for a given token.
+
+Now, a `Counter` of all the information of the tokens is created, to add up all the rankings of each token - giving us the final `query_counter`. We then find the `topk` elements and print out the titles out to a file (specified in the shell input line).
+
+## Conclusion
+
+This project was long, cumbersome and tiring.
+
+The entire code base of ~869 lines represents a single idea: the inverted index.
+
+But, all in all, worth it. 
+
+I had never created a search engine before and this was a fun learning experience.
