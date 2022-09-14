@@ -79,6 +79,13 @@ This project was long, cumbersome and tiring.
 
 The entire code base of ~869 lines represents a single idea: the inverted index.
 
+It takes 9 hours, 17 minutes and 33 seconds to index on ada with 15 CPUs. (Thanks Shivansh S. for running!) To merge the files, it takes 13 minutes and 54 seconds on my VM (6 CPUs Ryzen 5 4th gen).
+
+So, 9 hours and 30 minutes approximately to index and merge.
+
+And, 21 GB (exact) space, lesser than 1/4th.
+
+
 But, all in all, worth it. 
 
 I had never created a search engine before and this was a fun learning experience.
