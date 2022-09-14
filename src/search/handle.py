@@ -88,7 +88,7 @@ class Search:
         end_time = time()
 
         for score, title in sorted(titles, reverse=True):
-            self.out_file.write(title + "\n")
+            self.out_file.write(f"{title}\n")
 
         self.out_file.write(f"{round(end_time - start_time)}\n\n")
 

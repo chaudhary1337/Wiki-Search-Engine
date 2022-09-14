@@ -1,60 +1,60 @@
-205380, david hurley
-334499, john wilton (general)
-472574, melbourne
-476295, perth stadium
-37307, michaelia cash
-230343, australia–russia relations
-164089, arthur sinodinos
-293577, outline of australia
-270131, australia–ukraine relations
-437199, jim molan
-0
+[169.19819666018057] 21748, western australia
+[154.90848935940645] 45120, economy of australia
+[154.6808914089312] 19328257, 2019–20 australian bushfire season
+[153.85879787257116] 113052, billy hughes
+[153.62963842868652] 2164330, australia men's national soccer team
+[153.50273897657814] 2131212, australia
+[152.09366340352278] 11887, liberal party of australia
+[148.3186150743602] 2093216, military history of australia during world war ii
+[147.67706189518202] 473622, national library of australia
+[147.66816332581593] 13076971, major roads in the wheatbelt region of western australia
+3
 
-402455, list of tourist attractions in silicon valley
-360997, silicon valley toxics coalition
-429870, silicon tetrabromide
-419925, template:san jose and silicon valley attractions
-45159, gila river valley
-374135, silicon hills
-36756, san jose flea market
-154111, kerio valley
-349217, george ivory (basketball)
-428409, parker valley
-0
+[1267.5223480136412] 17617, silicon valley
+[1110.25932460804] 13112160, silicon valley (tv series)
+[961.4950662607788] 12392985, silicon valley community foundation
+[958.5913064596475] 18730006, silicon valley (season 2)
+[949.3027713282854] 14957559, silicon valley (season 1)
+[947.8041488386513] 15738765, silicon valley education foundation
+[939.5810820457507] 4640982, silicon valley leadership group
+[936.9532851736758] 18732874, list of silicon valley characters
+[931.9980638147003] 1007445, carnegie mellon silicon valley
+[918.1429549568443] 18730028, silicon valley (season 4)
+2
 
-90828, cat health
-375767, 2008 hamilton tiger-cats season
-200162, the very best of cat stevens
-59312, the great cat massacre
-403775, cat royal
-295082, ottoline and the yellow cat
-23458, mario lepe
-208854, cat rambo
-56891, cat (zodiac)
-359154, matthew and son
-0
+[52.84851875968496] 106804, manx cat
+[47.52713315029793] 176508, burmese cat
+[43.09350409764127] 42293, bengal cat
+[42.252139850592] 139157, felix the cat
+[41.31558207709249] 386075, siberian cat
+[41.23109285021642] 9290960, alley cat allies
+[40.91742341153758] 19306565, streets (song)
+[40.820975716262396] 10737705, persian cat
+[40.728226375346466] 42312, siamese cat
+[40.46307516178008] 15657800, cats (2019 film)
+2
 
-429388, rotation (cute is what we aim for album)
-90828, cat health
-371941, cute (i'm not cute!)
-375767, 2008 hamilton tiger-cats season
-200162, the very best of cat stevens
-59312, the great cat massacre
-354966, namida no iro
-307667, list of sanrio characters
-403775, cat royal
-295082, ottoline and the yellow cat
-0
+[308.09288392853375] 9778046, cute (japanese idol group) discography
+[246.30246971820685] 3179584, cute (japanese group)
+[244.34911793440838] 11214572, cute cat theory of digital activism
+[226.7012211286683] 5754158, rotation (cute is what we aim for album)
+[214.36789012627722] 11803871, 2 cute shinseinaru best album
+[211.39407503873983] 106804, manx cat
+[211.04957220948444] 10891734, amazuppai haru ni sakura saku
+[202.84219708143465] 11360523, chō happy song
+[199.0736134007964] 19955180, stray (video game)
+[190.1085326011917] 176508, burmese cat
+2
 
-75771, idaho potato museum
-331987, silesian dumplings
-335130, king edward potato
-36094, patatin
-369471, brandade
-336097, potato carboxypeptidase inhibitor
-322449, wikipedia:graphics lab/images to improve/archive/apr 2008
-38919, agriculture in taiwan
-343083, morton's potato chips
-93792, wikipedia:reference desk/archives/science/2008 march 5
+[171.92412420089977] 16264, potato chip
+[144.6653686550343] 7115272, the mr. potato head show
+[142.29485662707793] 15300, potato
+[142.23576142580683] 450643, baked potato
+[138.86135195427605] 34065, sweet potato
+[134.6144754360329] 169124, mr. potato head
+[133.8126051816056] 1048453, potato bread
+[132.99891949432688] 298281, mashed potato
+[132.99891949432688] 119468, phytophthora infestans
+[131.20537836389096] 184916, potato pancake
 0
 

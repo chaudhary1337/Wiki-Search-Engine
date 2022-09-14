@@ -36,7 +36,7 @@ PRINT_LIMIT = 10000
 # index blowing up
 DUMP_LIMIT = 50000
 # the total number of documents
-TOTAL = 476811
+TOTAL = 22275142
 # cache for pystemmer
 STEM_CACHE = 10000000
 # number of "threads" for multi-processing in python
@@ -66,9 +66,9 @@ FIELD_WEIGHTS = {
 }
 
 # multiplied by this amount if a match happens for a query
-BONUS_DEFAULT = 1
-BONUS_MISMATCH = 0
-BONUS = 1.5
+BONUS_DEFAULT = 2
+BONUS_MISMATCH = 1
+BONUS = 3
 
 # reverse mapping of the fields dumped to be used during searching
 RFIELDS = {

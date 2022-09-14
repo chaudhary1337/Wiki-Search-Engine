@@ -1,2 +1,2 @@
 clear
-python3 src/searcher.py /tmp/indices queries.txt
+python3 src/searcher.py /tmp/indices/temp queries.txt

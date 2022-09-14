@@ -1,5 +1,5 @@
-Australia
-Silicon Valley
-Cat
-Cute cat
-Potato
+b:Australia
+t:Silicon Valley
+l:Cat
+i:Cute cat
+c:Potato
